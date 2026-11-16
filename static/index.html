@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MD → PDF Studio</title>
+<link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <div class="brand" title="MD → PDF Studio — elaborazione locale">
+      <span class="brand-mark">MD</span>
+      <span class="brand-arrow">→</span>
+      <span class="brand-pdf">PDF</span>
+      <span class="brand-text">Studio<small>locale</small></span>
+    </div>
+
+    <div class="doc-tabs" id="tabs" role="tablist" aria-label="Documenti aperti"></div>
+
+    <div class="top-actions">
+      <button class="btn icon-only" id="btnNew" title="Nuovo documento (Ctrl+N)" aria-label="Nuovo documento">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <button class="btn" id="btnOpen" title="Apri file Markdown (Ctrl+O)">
+        <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <span>Apri</span>
+      </button>
+      <button class="btn" id="btnSave" title="Salva Markdown (Ctrl+S)">
+        <svg viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5zM8 3v6h8V3M8 21v-7h8v7"/></svg>
+        <span>Salva</span>
+      </button>
+      <button class="btn primary" id="btnExport" title="Esporta PDF e scegli dove salvarlo (Ctrl+E)">
+        <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+        <span>Esporta PDF</span>
+      </button>
+      <button class="btn icon-only" id="btnBatch" title="Esportazione batch" aria-label="Esportazione batch">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/><circle cx="19" cy="17" r="2.4"/></svg>
+      </button>
+      <button class="btn icon-only" id="btnLogs" title="Log conversioni" aria-label="Log conversioni">
+        <svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>
+      </button>
+      <button class="btn icon-only accent" id="btnSettings" title="Impostazioni (Ctrl+,)" aria-label="Impostazioni">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.08A1.7 1.7 0 0 0 8.95 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.52-1.03H3v-4h.08A1.7 1.7 0 0 0 4.6 8.95a1.7 1.7 0 0 0-.34-1.87l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 8.95 4.6 1.7 1.7 0 0 0 9.98 3.08V3h4v.08a1.7 1.7 0 0 0 1.03 1.52 1.7 1.7 0 0 0 1.87-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 8.95a1.7 1.7 0 0 0 1.52 1.03H21v4h-.08A1.7 1.7 0 0 0 19.4 15z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="toolstrip">
+    <div class="doc-meta">
+      <span class="doc-name" id="docName">Senza titolo.md</span>
+      <span class="doc-path" id="docPath">bozza locale</span>
+      <span class="dirty-dot" id="dirtyDot" title="Modifiche non salvate"></span>
+    </div>
+    <div class="toolstrip-actions">
+      <button class="link-btn" id="btnExample" title="Carica un documento dimostrativo completo">Carica esempio</button>
+      <button class="link-btn" id="btnOpenPath" title="Apri un file dal suo percorso assoluto (le immagini relative funzionano)">Apri da percorso…</button>
+      <button class="link-btn" id="btnSaveAs" title="Salva con nome">Salva con nome…</button>
+      <button class="link-btn" id="btnInsertImage" title="Carica un'immagine e inseriscila nel documento">Inserisci immagine…</button>
+      <span class="tool-sep"></span>
+      <span class="editor-stats" id="editorStats">0 parole · 0 caratteri</span>
+    </div>
+  </div>
+
+  <main id="workspace">
+    <section class="editor-pane" id="editorPane" aria-label="Editor Markdown">
+      <div class="editor-scroll" id="editorScroll">
+        <div class="editor-gutter" id="editorGutter" aria-hidden="true"><div id="lineNumbers"></div></div>
+        <div class="editor-layer">
+          <pre class="editor-highlight" id="highlight" aria-hidden="true"></pre>
+          <textarea id="editor" spellcheck="false" wrap="soft" aria-label="Contenuto Markdown"
+            placeholder="# Inizia a scrivere Markdown…&#10;&#10;Trascina qui un file .md oppure premi Ctrl+O."></textarea>
+        </div>
+      </div>
+      <div class="editor-hint">
+        <kbd>Ctrl</kbd><kbd>S</kbd> salva <span>·</span>
+        <kbd>Ctrl</kbd><kbd>E</kbd> esporta <span>·</span>
+        <kbd>Ctrl</kbd><kbd>P</kbd> anteprima <span>·</span>
+        <kbd>Ctrl</kbd><kbd>O</kbd> apri
+        <span class="hint-right" id="saveState">bozza automatica attiva</span>
+      </div>
+    </section>
+
+    <div class="splitter" id="splitter" role="separator" aria-orientation="vertical" tabindex="0" aria-label="Ridimensiona editor e anteprima"></div>
+
+    <section class="preview-pane" id="previewPane" aria-label="Anteprima PDF">
+      <div class="preview-toolbar">
+        <div class="toolbar-group">
+          <button class="btn tiny icon-only" id="btnPrevPage" title="Pagina precedente" aria-label="Pagina precedente">
+            <svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg>
+          </button>
+          <div class="page-indicator" title="Pagina corrente / totale">
+            <input id="pageNumber" type="number" min="1" value="1" aria-label="Pagina corrente">
+            <span>/</span><span id="pageTotal">0</span>
+          </div>
+          <button class="btn tiny icon-only" id="btnNextPage" title="Pagina successiva" aria-label="Pagina successiva">
+            <svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+        <div class="toolbar-group">
+          <button class="btn tiny icon-only" id="btnZoomOut" title="Riduci zoom" aria-label="Riduci zoom">
+            <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M7.5 10.5h6M20 20l-5-5"/></svg>
+          </button>
+          <button class="btn tiny zoom-label" id="btnZoomReset" title="Ripristina zoom al 100%"><span id="zoomLabel">100%</span></button>
+          <button class="btn tiny icon-only" id="btnZoomIn" title="Aumenta zoom" aria-label="Aumenta zoom">
+            <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M7.5 10.5h6M10.5 7.5v6M20 20l-5-5"/></svg>
+          </button>
+          <button class="btn tiny active" id="btnFitWidth" title="Adatta alla larghezza" aria-pressed="true">
+            <svg viewBox="0 0 24 24"><path d="M4 6v12M20 6v12M8 12h8m0 0-3-3m3 3-3 3M8 12l3-3m-3 3 3 3"/></svg>
+            <span>Adatta</span>
+          </button>
+        </div>
+        <div class="toolbar-group right">
+          <span class="preview-engine" id="previewEngine" title="Motore PDF"></span>
+          <button class="btn tiny icon-only" id="btnRefreshPreview" title="Aggiorna anteprima (Ctrl+P)" aria-label="Aggiorna anteprima">
+            <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-scroll" id="previewScroll">
+        <div class="preview-pages" id="previewPages"></div>
+        <div class="preview-empty" id="previewEmpty">
+          <div class="empty-art">PDF</div>
+          <p>L’anteprima è fedele al file esportato.</p>
+          <span>Scrivi Markdown a sinistra: l’anteprima si aggiorna automaticamente.</span>
+        </div>
+        <div class="preview-loading" id="previewLoading"><span class="spinner"></span> Conversione in corso…</div>
+        <iframe class="pdf-fallback" id="pdfFallback" title="Anteprima PDF" hidden></iframe>
+      </div>
+
+      <div class="preview-statusbar">
+        <span id="previewStatus">In attesa del documento…</span>
+        <button class="warnings-link" id="btnWarnings" hidden>0 avvisi</button>
+      </div>
+      <div class="preview-warnings" id="previewWarnings" hidden></div>
+    </section>
+  </main>
+
+  <div class="drop-overlay" id="dropOverlay">
+    <div class="drop-card">
+      <span class="drop-icon">↓</span>
+      <strong>Rilascia i file Markdown</strong>
+      <small>.md · .markdown · .txt</small>
+    </div>
+  </div>
+
+  <!-- ===================== Settings drawer ===================== -->
+  <aside class="settings-drawer" id="settingsDrawer" aria-label="Impostazioni di formattazione" aria-hidden="true">
+    <div class="drawer-head">
+      <div>
+        <h2>Impostazioni</h2>
+        <p>Formattazione e pagina</p>
+      </div>
+      <button class="btn icon-only" id="btnCloseSettings" aria-label="Chiudi impostazioni">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="profile-bar">
+      <label for="profileSelect">Profilo</label>
+      <div class="profile-row">
+        <select id="profileSelect"></select>
+        <button class="btn tiny" id="btnLoadProfile" title="Applica il profilo selezionato">Applica</button>
+      </div>
+      <div class="profile-actions">
+        <button class="link-btn" id="btnSaveProfile">Salva</button>
+        <button class="link-btn" id="btnDuplicateProfile">Duplica</button>
+        <button class="link-btn" id="btnRenameProfile">Rinomina</button>
+        <button class="link-btn danger" id="btnDeleteProfile">Elimina</button>
+        <button class="link-btn" id="btnExportProfile">Esporta JSON</button>
+        <button class="link-btn" id="btnImportProfile">Importa JSON</button>
+      </div>
+    </div>
+
+    <nav class="settings-tabs" aria-label="Sezioni impostazioni">
+      <button class="settings-tab active" data-panel="document">Documento</button>
+      <button class="settings-tab" data-panel="typography">Tipografia</button>
+      <button class="settings-tab" data-panel="layout">Layout</button>
+      <button class="settings-tab" data-panel="theme">Tema</button>
+      <button class="settings-tab" data-panel="headerFooter">Header/Footer</button>
+      <button class="settings-tab" data-panel="pdf">PDF</button>
+    </nav>
+
+    <div class="settings-body">
+
+      <!-- Documento -->
+      <section class="settings-panel active" data-panel="document">
+        <h3>Metadati</h3>
+        <label class="field"><span>Titolo</span><input type="text" data-setting="document.title" placeholder="Titolo del documento"></label>
+        <label class="field"><span>Sottotitolo</span><input type="text" data-setting="document.subtitle" placeholder="Sottotitolo"></label>
+        <div class="field-grid">
+          <label class="field"><span>Autore</span><input type="text" data-setting="document.author" placeholder="Nome"></label>
+          <label class="field"><span>Data</span><input type="text" data-setting="document.date" placeholder="gg/mm/aaaa"></label>
+        </div>
+        <div class="field-grid">
+          <label class="field"><span>Lingua</span>
+            <select data-setting="document.lang">
+              <option value="it">Italiano</option><option value="en">English</option>
+              <option value="fr">Français</option><option value="de">Deutsch</option>
+              <option value="es">Español</option>
+            </select>
+          </label>
+          <label class="field"><span>Nome file PDF</span><input type="text" data-setting="document.filename" placeholder="documento"></label>
+        </div>
+
+        <h3>Struttura</h3>
+        <label class="switch"><input type="checkbox" data-setting="document.toc"><span class="switch-ui"></span><span>Indice automatico (TOC)</span></label>
+        <div class="field-grid compact">
+          <label class="field"><span>Profondità TOC</span><input type="number" min="1" max="6" step="1" data-setting="document.tocDepth"></label>
+          <label class="field"><span>Titolo indice</span><input type="text" data-setting="document.tocTitle"></label>
+        </div>
+        <label class="switch"><input type="checkbox" data-setting="document.figureCaptions"><span class="switch-ui"></span><span>Didascalie figure (alt/title)</span></label>
+        <h3>Numerazione</h3>
+        <div class="check-grid">
+          <label class="check"><input type="checkbox" data-setting="document.numberHeadings"><span>Tra titoli</span></label>
+          <label class="check"><input type="checkbox" data-setting="document.numberTables"><span>Tabelle</span></label>
+          <label class="check"><input type="checkbox" data-setting="document.numberFigures"><span>Figure</span></label>
+          <label class="check"><input type="checkbox" data-setting="document.numberPages"><span>Pagine</span></label>
+        </div>
+        <p class="help">La numerazione pagine usa l’header/footer. Le variabili <code>{page}</code> e <code>{pages}</code> sono sempre disponibili.</p>
+      </section>
+
+      <!-- Tipografia -->
+      <section class="settings-panel" data-panel="typography">
+        <h3>Famiglie font</h3>
+        <label class="field"><span>Corpo</span><select data-setting="typography.bodyFont" data-font-select></select></label>
+        <label class="field"><span>Titoli</span><select data-setting="typography.headingFont" data-font-select></select></label>
+        <label class="field"><span>Codice</span><select data-setting="typography.monoFont" data-font-select></select></label>
+
+        <h3>Dimensioni (pt)</h3>
+        <div class="field">
+          <span>Corpo <em class="value-note">8–24 pt</em></span>
+          <div class="range-pair">
+            <input type="range" min="8" max="24" step="0.5" data-setting="typography.bodySize">
+            <input type="number" min="8" max="24" step="0.5" data-setting="typography.bodySize">
+          </div>
+        </div>
+        <div class="field-grid three">
+          <label class="field"><span>H1</span><input type="number" min="8" max="72" step="0.5" data-setting="typography.h1Size"></label>
+          <label class="field"><span>H2</span><input type="number" min="8" max="64" step="0.5" data-setting="typography.h2Size"></label>
+          <label class="field"><span>H3</span><input type="number" min="8" max="56" step="0.5" data-setting="typography.h3Size"></label>
+          <label class="field"><span>H4</span><input type="number" min="8" max="48" step="0.5" data-setting="typography.h4Size"></label>
+          <label class="field"><span>Tabella</span><input type="number" min="6" max="32" step="0.5" data-setting="typography.tableSize"></label>
+          <label class="field"><span>Codice</span><input type="number" min="6" max="32" step="0.5" data-setting="typography.codeSize"></label>
+          <label class="field"><span>Didascalie</span><input type="number" min="6" max="32" step="0.5" data-setting="typography.captionSize"></label>
+        </div>
+
+        <h3>Spaziatura</h3>
+        <div class="field-grid">
+          <label class="field"><span>Interlinea</span><input type="number" min="0.8" max="3" step="0.05" data-setting="typography.lineHeight"></label>
+          <label class="field"><span>Spazio paragrafi (em)</span><input type="number" min="0" max="3" step="0.05" data-setting="typography.paragraphSpacing"></label>
+        </div>
+        <div class="field-grid">
+          <label class="field"><span>Rientro liste (em)</span><input type="number" min="0" max="6" step="0.1" data-setting="typography.listIndent"></label>
+          <label class="field"><span>Allineamento</span>
+            <select data-setting="typography.textAlign">
+              <option value="left">Sinistra</option><option value="justify">Giustificato</option><option value="center">Centrato</option>
+            </select>
+          </label>
+        </div>
+        <label class="switch"><input type="checkbox" data-setting="typography.codeLineNumbers"><span class="switch-ui"></span><span>Numeri di riga nei blocchi codice</span></label>
+        <label class="switch"><input type="checkbox" data-setting="typography.hyphenate"><span class="switch-ui"></span><span>Sillabazione automatica</span></label>
+      </section>
+
+      <!-- Layout -->
+      <section class="settings-panel" data-panel="layout">
+        <h3>Pagina</h3>
+        <div class="field-grid">
+          <label class="field"><span>Formato</span>
+            <select data-setting="layout.pageSize">
+              <option value="A4">A4 (210×297)</option><option value="A3">A3 (297×420)</option>
+              <option value="A5">A5 (148×210)</option><option value="Letter">Letter</option>
+              <option value="Legal">Legal</option><option value="custom">Personalizzato</option>
+            </select>
+          </label>
+          <label class="field"><span>Orientamento</span>
+            <select data-setting="layout.orientation">
+              <option value="portrait">Verticale</option><option value="landscape">Orizzontale</option>
+            </select>
+          </label>
+        </div>
+        <div class="field-grid" id="customSizeFields">
+          <label class="field"><span>Larghezza (mm)</span><input type="number" min="50" max="1000" step="1" data-setting="layout.customWidth"></label>
+          <label class="field"><span>Altezza (mm)</span><input type="number" min="50" max="1000" step="1" data-setting="layout.customHeight"></label>
+        </div>
+
+        <h3>Margini (mm)</h3>
+        <div class="field-grid">
+          <label class="field"><span>Superiore</span><input type="number" min="0" max="80" step="1" data-setting="layout.marginTop"></label>
+          <label class="field"><span>Inferiore</span><input type="number" min="0" max="80" step="1" data-setting="layout.marginBottom"></label>
+          <label class="field"><span>Sinistro</span><input type="number" min="0" max="80" step="1" data-setting="layout.marginLeft"></label>
+          <label class="field"><span>Destro</span><input type="number" min="0" max="80" step="1" data-setting="layout.marginRight"></label>
+        </div>
+
+        <h3>Contenuto</h3>
+        <div class="field-grid">
+          <label class="field"><span>Scala contenuto (%)</span><input type="number" min="50" max="200" step="5" data-setting="layout.scale"></label>
+          <label class="field"><span>Larghezza max immagini (%)</span><input type="number" min="10" max="100" step="5" data-setting="layout.maxImageWidth"></label>
+        </div>
+        <label class="switch"><input type="checkbox" data-setting="layout.avoidHeadingOrphans"><span class="switch-ui"></span><span>Evita titoli isolati a fondo pagina</span></label>
+        <label class="switch"><input type="checkbox" data-setting="layout.avoidBreakInside"><span class="switch-ui"></span><span>Evita interruzioni in tabelle, codice e figure</span></label>
+
+        <h3>Copertina</h3>
+        <label class="switch"><input type="checkbox" data-setting="layout.cover.enabled"><span class="switch-ui"></span><span>Includi copertina</span></label>
+        <div class="cover-fields">
+          <label class="field"><span>Titolo copertina</span><input type="text" data-setting="layout.cover.title" placeholder="Usa il titolo documento"></label>
+          <label class="field"><span>Sottotitolo</span><input type="text" data-setting="layout.cover.subtitle" placeholder="Usa il sottotitolo"></label>
+          <div class="field-grid">
+            <label class="field"><span>Autore</span><input type="text" data-setting="layout.cover.author" placeholder="Usa l’autore"></label>
+            <label class="field"><span>Data</span><input type="text" data-setting="layout.cover.date" placeholder="Usa la data"></label>
+          </div>
+          <label class="field"><span>Logo (percorso o URL)</span><input type="text" data-setting="layout.cover.logo" placeholder="/percorso/logo.png"></label>
+          <button class="btn small" id="btnCoverLogo">Carica logo…</button>
+        </div>
+
+        <h3>Watermark</h3>
+        <label class="switch"><input type="checkbox" data-setting="layout.watermark.enabled"><span class="switch-ui"></span><span>Mostra watermark</span></label>
+        <div class="watermark-fields">
+          <label class="field"><span>Testo</span><input type="text" data-setting="layout.watermark.text" placeholder="BOZZA"></label>
+          <div class="field-grid">
+            <label class="field"><span>Opacità</span><input type="number" min="0" max="1" step="0.01" data-setting="layout.watermark.opacity"></label>
+            <label class="field"><span>Rotazione (°)</span><input type="number" min="-180" max="180" step="1" data-setting="layout.watermark.rotation"></label>
+          </div>
+          <div class="field-grid">
+            <label class="field"><span>Posizione</span>
+              <select data-setting="layout.watermark.position">
+                <option value="center">Centro</option><option value="top-left">Alto sinistra</option>
+                <option value="top-right">Alto destra</option><option value="bottom-left">Basso sinistra</option>
+                <option value="bottom-right">Basso destra</option>
+              </select>
+            </label>
+            <label class="field"><span>Colore</span><input type="color" data-setting="layout.watermark.color"></label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tema -->
+      <section class="settings-panel" data-panel="theme">
+        <h3>Preset</h3>
+        <label class="field"><span>Tema</span><select id="themeSelect"></select></label>
+        <p class="help">I temi includono colori di testo, link, titoli, bordi, codice e sfondo pagina.</p>
+        <h3>Colori</h3>
+        <div class="color-grid">
+          <label class="color-field"><span>Testo</span><input type="color" data-setting="theme.text"></label>
+          <label class="color-field"><span>Link</span><input type="color" data-setting="theme.link"></label>
+          <label class="color-field"><span>Titoli</span><input type="color" data-setting="theme.headings"></label>
+          <label class="color-field"><span>Bordi</span><input type="color" data-setting="theme.border"></label>
+          <label class="color-field"><span>Sfondo codice</span><input type="color" data-setting="theme.codeBg"></label>
+          <label class="color-field"><span>Testo codice</span><input type="color" data-setting="theme.codeText"></label>
+          <label class="color-field"><span>Sfondo pagina</span><input type="color" data-setting="theme.background"></label>
+          <label class="color-field"><span>Testo attenuato</span><input type="color" data-setting="theme.muted"></label>
+          <label class="color-field"><span>Sfondo citazioni</span><input type="color" data-setting="theme.blockquoteBg"></label>
+          <label class="color-field"><span>Header tabelle</span><input type="color" data-setting="theme.tableHeaderBg"></label>
+        </div>
+        <h3>Tema personalizzato</h3>
+        <div class="profile-row">
+          <input type="text" id="customThemeName" placeholder="Nome del tema">
+          <button class="btn small" id="btnSaveTheme">Salva tema</button>
+        </div>
+        <button class="link-btn danger" id="btnDeleteTheme">Elimina tema personalizzato selezionato</button>
+      </section>
+
+      <!-- Header / Footer -->
+      <section class="settings-panel" data-panel="headerFooter">
+        <h3>Header</h3>
+        <div class="hf-grid">
+          <label class="field"><span>Sinistra</span><input type="text" data-setting="headerFooter.headerLeft" data-hf></label>
+          <label class="field"><span>Centro</span><input type="text" data-setting="headerFooter.headerCenter" data-hf></label>
+          <label class="field"><span>Destra</span><input type="text" data-setting="headerFooter.headerRight" data-hf></label>
+        </div>
+        <label class="switch"><input type="checkbox" data-setting="headerFooter.headerBorder"><span class="switch-ui"></span><span>Linea sotto l’header</span></label>
+        <h3>Footer</h3>
+        <div class="hf-grid">
+          <label class="field"><span>Sinistra</span><input type="text" data-setting="headerFooter.footerLeft" data-hf></label>
+          <label class="field"><span>Centro</span><input type="text" data-setting="headerFooter.footerCenter" data-hf></label>
+          <label class="field"><span>Destra</span><input type="text" data-setting="headerFooter.footerRight" data-hf></label>
+        </div>
+        <label class="switch"><input type="checkbox" data-setting="headerFooter.footerBorder"><span class="switch-ui"></span><span>Linea sopra il footer</span></label>
+        <div class="field-grid">
+          <label class="field"><span>Font header (pt)</span><input type="number" min="5" max="16" step="0.5" data-setting="headerFooter.headerFontSize"></label>
+          <label class="field"><span>Font footer (pt)</span><input type="number" min="5" max="16" step="0.5" data-setting="headerFooter.footerFontSize"></label>
+        </div>
+        <h3>Variabili</h3>
+        <div class="chips" id="hfVariables">
+          <button class="chip" data-var="{title}">{title}</button>
+          <button class="chip" data-var="{author}">{author}</button>
+          <button class="chip" data-var="{date}">{date}</button>
+          <button class="chip" data-var="{page}">{page}</button>
+          <button class="chip" data-var="{pages}">{pages}</button>
+          <button class="chip" data-var="{filename}">{filename}</button>
+        </div>
+        <p class="help">Clicca una variabile mentre il cursore è in un campo header/footer per inserirla. Esempio: <code>Pagina {page} di {pages}</code>.</p>
+      </section>
+
+      <!-- PDF -->
+      <section class="settings-panel" data-panel="pdf">
+        <h3>Motore</h3>
+        <label class="field"><span>Motore PDF</span>
+          <select data-setting="pdf.engine">
+            <option value="auto">Automatico (WeasyPrint → Chromium)</option>
+            <option value="weasyprint">WeasyPrint</option>
+            <option value="chromium">Chromium (fallback)</option>
+          </select>
+        </label>
+        <div class="engine-status" id="engineStatus"></div>
+        <h3>Cartella copia automatica / batch</h3>
+        <label class="field"><span>Percorso copia automatica e batch</span><input type="text" data-setting="pdf.outputDir" id="outputDirInput" placeholder="predefinita: output/ del progetto"></label>
+        <p class="help" id="outputDirHelp">La copia automatica del singolo export e l’export batch usano questa cartella. Il PDF principale viene salvato tramite il dialogo di sistema (o del browser come fallback).</p>
+        <h3>Ambiente locale</h3>
+        <dl class="facts">
+          <dt>Bozza</dt><dd id="factDraft">—</dd>
+          <dt>Stato</dt><dd id="factState">—</dd>
+          <dt>Log</dt><dd id="factLog">—</dd>
+        </dl>
+        <div class="panel-actions">
+          <button class="btn small" id="btnResetSettings">Ripristina impostazioni predefinite</button>
+          <button class="btn small" id="btnShortcuts">Scorciatoie</button>
+        </div>
+      </section>
+
+    </div>
+  </aside>
+  <div class="drawer-scrim" id="drawerScrim" hidden></div>
+
+  <!-- ===================== Dialogs ===================== -->
+  <dialog class="modal" id="promptDialog">
+    <form method="dialog" class="modal-card">
+      <h2 id="promptTitle">Titolo</h2>
+      <p id="promptMessage" class="modal-message"></p>
+      <label class="field"><span id="promptLabel">Valore</span><input type="text" id="promptInput"></label>
+      <div class="modal-actions">
+        <button class="btn" type="button" value="cancel" id="promptCancel" onclick="this.closest('dialog').close('cancel')">Annulla</button>
+        <button class="btn primary" type="submit" value="confirm" id="promptConfirm">Conferma</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="confirmDialog">
+    <form method="dialog" class="modal-card">
+      <h2 id="confirmTitle">Confermi?</h2>
+      <p id="confirmMessage" class="modal-message"></p>
+      <div class="modal-actions">
+        <button class="btn" value="cancel" id="confirmCancel">Annulla</button>
+        <button class="btn danger" value="confirm" id="confirmOk">Conferma</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal wide" id="batchDialog">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2>Esportazione batch</h2>
+        <button class="btn icon-only" data-close-dialog="batchDialog" aria-label="Chiudi">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <p class="modal-message">Seleziona più file Markdown: verranno convertiti con il profilo attuale e salvati nella cartella di esportazione.</p>
+      <label class="file-drop" id="batchDrop">
+        <input type="file" id="batchFiles" accept=".md,.markdown,.mdown,.txt" multiple hidden>
+        <strong>Scegli i file</strong>
+        <span>oppure trascinali qui · .md / .markdown / .txt</span>
+      </label>
+      <ul class="file-list" id="batchList"></ul>
+      <div class="batch-results" id="batchResults" hidden></div>
+      <div class="modal-actions">
+        <button class="btn" data-close-dialog="batchDialog">Chiudi</button>
+        <button class="btn primary" id="btnRunBatch" disabled>Esporta i PDF</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="modal wide" id="logsDialog">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2>Log conversioni</h2>
+        <button class="btn icon-only" data-close-dialog="logsDialog" aria-label="Chiudi">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="log-table-wrap"><table class="log-table" id="logTable">
+        <thead><tr><th>Quando</th><th>File</th><th>Esito</th><th>Pagine</th><th>Durata</th><th>Motore</th><th>Percorso / messaggio</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <div class="modal-actions">
+        <button class="btn" id="btnClearLogs">Svuota log</button>
+        <button class="btn" data-close-dialog="logsDialog">Chiudi</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="shortcutsDialog">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2>Scorciatoie</h2>
+        <button class="btn icon-only" data-close-dialog="shortcutsDialog" aria-label="Chiudi">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <dl class="shortcut-list">
+        <dt><kbd>Ctrl</kbd><kbd>S</kbd></dt><dd>Salva il documento Markdown</dd>
+        <dt><kbd>Ctrl</kbd><kbd>E</kbd></dt><dd>Esporta il PDF</dd>
+        <dt><kbd>Ctrl</kbd><kbd>P</kbd></dt><dd>Aggiorna immediatamente l’anteprima</dd>
+        <dt><kbd>Ctrl</kbd><kbd>O</kbd></dt><dd>Apri un file Markdown</dd>
+        <dt><kbd>Ctrl</kbd><kbd>N</kbd></dt><dd>Nuovo documento</dd>
+        <dt><kbd>Ctrl</kbd><kbd>,</kbd></dt><dd>Apri/chiudi le impostazioni</dd>
+        <dt><kbd>Ctrl</kbd><kbd>+</kbd> / <kbd>−</kbd></dt><dd>Zoom anteprima</dd>
+      </dl>
+      <div class="modal-actions"><button class="btn primary" data-close-dialog="shortcutsDialog">Chiudi</button></div>
+    </div>
+  </dialog>
+
+  <input type="file" id="fileInput" accept=".md,.markdown,.mdown,.txt" multiple hidden>
+  <input type="file" id="imageInput" accept="image/*" hidden>
+  <input type="file" id="coverLogoInput" accept="image/*" hidden>
+  <input type="file" id="profileImportInput" accept=".json,application/json" hidden>
+
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+</div>
+<script type="module" src="/static/js/app.js?v=1.5.0"></script>
+</body>
+</html>

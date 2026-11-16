@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "settings": {
+    "document": {
+      "title": "",
+      "subtitle": "",
+      "author": "",
+      "date": "",
+      "lang": "it",
+      "toc": false,
+      "tocDepth": 3,
+      "tocTitle": "Indice",
+      "numberHeadings": false,
+      "numberTables": false,
+      "numberFigures": false,
+      "numberPages": true,
+      "figureCaptions": true,
+      "filename": "demo"
+    },
+    "typography": {
+      "bodyFont": "DejaVu Sans",
+      "headingFont": "DejaVu Sans",
+      "monoFont": "DejaVu Sans Mono",
+      "bodySize": 8.0,
+      "h1Size": 8.0,
+      "h2Size": 8.0,
+      "h3Size": 8.0,
+      "h4Size": 8.0,
+      "tableSize": 6.0,
+      "codeSize": 6.0,
+      "captionSize": 6.0,
+      "lineHeight": 1.5,
+      "paragraphSpacing": 0.65,
+      "listIndent": 1.6,
+      "textAlign": "left",
+      "codeLineNumbers": false,
+      "hyphenate": false
+    },
+    "layout": {
+      "pageSize": "A4",
+      "orientation": "portrait",
+      "customWidth": 210.0,
+      "customHeight": 297.0,
+      "marginTop": 20.0,
+      "marginBottom": 20.0,
+      "marginLeft": 20.0,
+      "marginRight": 20.0,
+      "scale": 100,
+      "maxImageWidth": 100,
+      "avoidHeadingOrphans": true,
+      "avoidBreakInside": true,
+      "cover": {
+        "enabled": false,
+        "title": "",
+        "subtitle": "",
+        "author": "",
+        "date": "",
+        "logo": ""
+      },
+      "watermark": {
+        "enabled": false,
+        "text": "BOZZA",
+        "opacity": 0.07,
+        "rotation": -35.0,
+        "position": "center",
+        "color": "#111827"
+      }
+    },
+    "theme": {
+      "name": "light",
+      "text": "#1f2933",
+      "muted": "#5c6b7a",
+      "link": "#2563eb",
+      "headings": "#16324f",
+      "border": "#cbd5e0",
+      "codeBg": "#f6f8fa",
+      "codeText": "#24292f",
+      "blockquoteBg": "#eef6ff",
+      "tableHeaderBg": "#edf2f7",
+      "background": "#ffffff"
+    },
+    "headerFooter": {
+      "headerLeft": "",
+      "headerCenter": "",
+      "headerRight": "",
+      "footerLeft": "",
+      "footerCenter": "{page} / {pages}",
+      "footerRight": "",
+      "headerFontSize": 8.5,
+      "footerFontSize": 8.5,
+      "headerBorder": false,
+      "footerBorder": false
+    },
+    "pdf": {
+      "engine": "auto",
+      "outputDir": ""
+    }
+  },
+  "profiles": {},
+  "themes": {},
+  "lastFilename": "demo"
+}

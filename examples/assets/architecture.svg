@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width="960" height="440">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0f9ff"/>
+      <stop offset="1" stop-color="#eef2ff"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0284c7"/>
+      <stop offset="1" stop-color="#4f46e5"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="960" height="440" rx="18" fill="url(#bg)" stroke="#cbd5e1"/>
+  <text x="48" y="58" font-family="DejaVu Sans, sans-serif" font-size="24" font-weight="700" fill="#0f172a">Pipeline di conversione</text>
+  <text x="48" y="84" font-family="DejaVu Sans, sans-serif" font-size="13" fill="#64748b">Tutto in locale: nessun documento lascia la macchina</text>
+
+  <g filter="url(#shadow)">
+    <rect x="48" y="130" width="180" height="112" rx="12" fill="#ffffff" stroke="#bae6fd"/>
+    <text x="138" y="168" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-size="14" font-weight="700" fill="#0369a1">Markdown</text>
+    <text x="138" y="192" text-anchor="middle" font-family="DejaVu Sans Mono, monospace" font-size="11" fill="#64748b">frontmatter + GFM</text>
+    <text x="138" y="212" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-size="11" fill="#94a3b8">tabelle · note · codice</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="298" y="130" width="180" height="112" rx="12" fill="#ffffff" stroke="#c7d2fe"/>
+    <text x="388" y="168" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-size="14" font-weight="700" fill="#4338ca">Markdown-it</text>
+    <text x="388" y="192" text-anchor="middle" font-family="DejaVu Sans Mono, monospace" font-size="11" fill="#64748b">HTML + slug TOC</text>
+    <text x="388" y="212" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-size="11" fill="#94a3b8">Pygments · figure</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="548" y="130" width="180" height="112" rx="12" fill="#ffffff" stroke="#ddd6fe"/>
+    <text x="638" y="168" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-size="14" font-weight="700" fill="#6d28d9">WeasyPrint</text>
+    <text x="638" y="192" text-anchor="middle" font-family="DejaVu Sans Mono, monospace" font-size="11" fill="#64748b">CSS paged media</text>
+    <text x="638" y="212" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-size="11" fill="#94a3b8">header · footer · TOC</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="798" y="130" width="114" height="112" rx="12" fill="url(#accent)"/>
+    <text x="855" y="180" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="700" fill="#ffffff">PDF</text>
+    <text x="855" y="204" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-size="10" fill="#e0e7ff">preview identica</text>
+  </g>
+
+  <g stroke="#64748b" stroke-width="1.8" fill="none" marker-end="url(#arrow)">
+    <path d="M228 186 H292"/>
+    <path d="M478 186 H542"/>
+    <path d="M728 186 H792"/>
+  </g>
+
+  <rect x="48" y="292" width="864" height="104" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+  <circle cx="80" cy="324" r="6" fill="#22c55e"/>
+  <text x="98" y="329" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#334155">Bozza automatica in ~/.config/md-to-pdf-studio/draft.md</text>
+  <circle cx="80" cy="354" r="6" fill="#0ea5e9"/>
+  <text x="98" y="359" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#334155">Profili di stile e temi personalizzati in config.json</text>
+  <circle cx="80" cy="384" r="6" fill="#8b5cf6"/>
+  <text x="98" y="389" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#334155">Export batch con log delle conversioni</text>
+</svg>
